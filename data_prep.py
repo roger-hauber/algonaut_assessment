@@ -1,15 +1,17 @@
 import pandas as pd
 import openai
-import requests
-from dotenv import load_dotenv
-import os
 import urllib
 import xml.etree.ElementTree as ET
 import string
+import nltk
 from nltk import word_tokenize
 from nltk.stem import WordNetLemmatizer
 from nltk.corpus import stopwords
 
+#download some nltk dependencies
+nltk.download("stopwords")
+nltk.download("punkt")
+nltk.download("wordnet")
 
 
 # function to get paper titles and summaries from ArXiv
@@ -65,6 +67,7 @@ def cleaning(text: str) -> str:
 papers_list = fetch_papers()
 
 #apply cleaning function
+
 papers_list_clean = [cleaning(text) for text in papers_list]
 
 
