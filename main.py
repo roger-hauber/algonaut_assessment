@@ -6,11 +6,6 @@ from scipy import spatial
 import ast
 import tiktoken
 
-# get api key from dot env
-load_dotenv()
-
-OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
-
 #set up OpenAi client instance
 client = openai.OpenAI()
 
@@ -112,12 +107,14 @@ def ask(
 
     return response_message
 
+# for aesthetic reasons: a visual buffer to use when necesary
+buffer = "\n----------------------------------------------------\n\n"
 
 # Basic program structure infinite while loop asking for a prompt from user
 # keyword "quit" as input will cause a break in the loop and exit the program
 
 while True:
-    prompt = input("What do you want to know about Llama-2? \n Type 'quit' and hit enter to exit program. \n")
+    prompt = input("\n What do you want to know about Llama-2? \n\n To exit, type 'quit' and hit enter. \n\n"+buffer )
 
     if prompt == "quit":
         break
@@ -127,7 +124,5 @@ while True:
 
     #print response message from chat and add several new lines of dashes to
     #separate message from next input prompt
-
-    buffer = "\n----------------------------------------------------\n"
 
     print("\n" + resp_message + "\n" + buffer + buffer + buffer)
