@@ -5,11 +5,12 @@ from dotenv import load_dotenv
 import os
 import urllib
 import xml.etree.ElementTree as ET
+import string
+from nltk import word_tokenize
+from nltk.stem import WordNetLemmatizer
+from nltk.corpus import stopwords
 
-#load dotenv and get openai key
-load_dotenv()
 
-OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
 
 # function to get paper titles and summaries from ArXiv
 def fetch_papers():
@@ -38,8 +39,34 @@ def fetch_papers():
 
     return papers_list
 
+#function to clean up text data
+def cleaning(text: str) -> str:
+    """
+    Return cleaned up version of input string: lowercase, replacing special characters, removing stopwords,
+    and stemming
+    """
+    #lowercase
+    clean_text = text.lower()
+    #strip white space
+    clean_text = clean_text.strip()
+    #remove punctuation
+    clean_text = "".join([letter for letter in clean_text if letter not in string.punctuation])
+    #remove stopwords
+    stop_words = set(stopwords.words("english"))
+    clean_text = [word for word in word_tokenize(clean_text) if not word.lower() in stop_words]
+    # stemming/lemmatizing
+    clean_text = " ".join([WordNetLemmatizer().lemmatize(word) for word in clean_text])
+
+    return clean_text
+
+
+
 ##
 papers_list = fetch_papers()
+
+#apply cleaning function
+papers_list_clean = [cleaning(text) for text in papers_list]
+
 
 # get embeddings for each paper in papers_list
 EMBEDDING_MODEL = "text-embedding-ada-002" #specifying which embedding model to use
@@ -50,7 +77,7 @@ embedds = []
 
 
 #get api response for pap in papers_list and append it to embeddings
-for pap in papers_list:
+for pap in papers_list_clean:
     pap = pap.replace("\n", " ")
     response = client.embeddings.create(model=EMBEDDING_MODEL, input = [pap])
 
